@@ -1,0 +1,26 @@
+{
+    "name": "boris/efakture",
+    "description": "Biblioteka za e-fakture",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Boris\\EFakture\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Boris Vujicic",
+            "email": "boris.vujicic@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "dev-master",
+        "phpstan/phpstan": "^1.8",
+        "phpunit/phpunit": "^9.5"
+    }
+}
