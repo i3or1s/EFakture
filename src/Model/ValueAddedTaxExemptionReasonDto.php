@@ -1,8 +1,8 @@
 <?php
 
-namespace Boris\EFakture\Model;
+namespace i3or1s\EFakture\Model;
 
-final class ValueAddedTaxExemptionReasonDto
+final class ValueAddedTaxExemptionReasonDto implements SEFStorageInterface
 {
     public readonly int $reasonId;
     public readonly ?string $key;
@@ -27,5 +27,24 @@ final class ValueAddedTaxExemptionReasonDto
         $this->activeFrom = $activeFrom;
         $this->activeTo = $activeTo;
         $this->category = $category;
+    }
+
+    /**
+     * @return array{reasonId: int, key: ?string, law: ?string, article: int, paragraph: int, text: ?string, freeFormNote: ?string, activeFrom: string, activeTo: ?string, category: ?string}
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'reasonId' => $this->reasonId,
+            'key' => $this->key,
+            'law' => $this->law,
+            'article' => $this->article,
+            'paragraph' => $this->paragraph,
+            'text' => $this->text,
+            'freeFormNote' => $this->freeFormNote,
+            'activeFrom' => $this->activeFrom->format('Y-m-d'),
+            'activeTo' => $this->activeTo?->format('Y-m-d'),
+            'category' => $this->category,
+        ];
     }
 }

@@ -1,4 +1,6 @@
 parameters:
   level: max
+  ignoreErrors:
+    - '#Strict comparison using === between 0 and int<1, max> will always evaluate to false.#'
   paths:
     - src

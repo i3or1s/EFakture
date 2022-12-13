@@ -1,8 +1,8 @@
 <?php
 
-namespace Boris\EFakture\Model;
+namespace i3or1s\EFakture\Model;
 
-use Boris\EFakture\Util\IsStringLength;
+use i3or1s\EFakture\Util\IsStringLength;
 
 final class PurchaseInvoiceDto
 {

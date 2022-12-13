@@ -1,6 +1,6 @@
 <?php
 
-namespace Boris\EFakture\Model;
+namespace i3or1s\EFakture\Model;
 
 enum SourceInvoiceSelectionMode: string
 {

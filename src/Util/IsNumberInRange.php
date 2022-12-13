@@ -1,6 +1,6 @@
 <?php
 
-namespace Boris\EFakture\Util;
+namespace i3or1s\EFakture\Util;
 
 final class IsNumberInRange
 {

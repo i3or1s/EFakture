@@ -1,11 +1,18 @@
 {
-    "name": "boris/efakture",
-    "description": "Biblioteka za e-fakture",
+    "name": "i3or1s/efakture",
+    "description": "Library for e-fakture SEF",
+    "homepage": "https://github.com/i3or1s/EFakture",
+    "keywords": [
+        "PHP",
+        "SEF",
+        "EFakture",
+        "e-fakture"
+    ],
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Boris\\EFakture\\": "src/"
+            "i3or1s\\EFakture\\": "src/"
         }
     },
     "authors": [
@@ -16,11 +23,16 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": "^8.1"
+        "php": "^8.1",
+        "i3or1s/ubl": "dev-main",
+        "react/http": "^1.8",
+        "react/async": "^4",
+        "ramsey/uuid": "5.x-dev"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "dev-master",
         "phpstan/phpstan": "^1.8",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "symfony/console": "6.3.x-dev"
     }
 }
