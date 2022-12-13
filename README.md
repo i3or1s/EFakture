@@ -85,7 +85,7 @@ Note: Company data should be valid in SEF in order for this to work
 ```php
 $invoice = new \i3or1s\EFakture\UBL\Invoice(
     new \i3or1s\EFakture\UBL\InvoiceDetails(
-        \Ramsey\Uuid\Uuid::uuid4(), new DateTimeImmutable(), new DateTimeImmutable('+ 7days'), new \i3or1s\EFakture\UBL\CBC\InvoiceTypeCode(\i3or1s\EFakture\UBL\CBC\InvoiceTypeCode::COMMERCIAL_INVOICE),
+        'invoice number (01/2022)', new DateTimeImmutable(), new DateTimeImmutable('+ 7days'), new \i3or1s\EFakture\UBL\CBC\InvoiceTypeCode(\i3or1s\EFakture\UBL\CBC\InvoiceTypeCode::COMMERCIAL_INVOICE),
         'RSD', new \i3or1s\EFakture\UBL\CAC\InvoicePeriod(\i3or1s\EFakture\UBL\CAC\InvoicePeriod::DELIVERY_ACTUAL_DATE),
         '123456', new DateTimeImmutable('+ 7days')
 
