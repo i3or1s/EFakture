@@ -157,7 +157,7 @@ final class FileSystemStorage implements StorageInterface
                     if(null !== $SEFItem) {
                         /** @var SEFStorageInterface $SEFStorage */
                         $SEFStorage = new $model(...array_values($SEFItem));
-                        $response[] = new $SEFStorage;
+                        $response[] = $SEFStorage;
                     }
                 }
             }
