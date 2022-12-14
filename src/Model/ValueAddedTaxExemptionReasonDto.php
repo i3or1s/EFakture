@@ -7,30 +7,34 @@ final class ValueAddedTaxExemptionReasonDto implements SEFStorageInterface
     public readonly int $reasonId;
     public readonly ?string $key;
     public readonly ?string $law;
-    public readonly int $article;
-    public readonly int $paragraph;
+    public readonly ?string $article;
+    public readonly ?string $paragraph;
+    public readonly ?string $point;
+    public readonly ?string $subpoint;
     public readonly ?string $text;
     public readonly ?string $freeFormNote;
     public readonly \DateTimeImmutable $activeFrom;
     public readonly ?\DateTimeImmutable $activeTo;
     public readonly ?string $category;
 
-    public function __construct(int $reasonId, ?string $key, ?string $law, int $article, int $paragraph, ?string $text, ?string $freeFormNote, \DateTimeImmutable $activeFrom, ?\DateTimeImmutable $activeTo, ?string $category)
+    public function __construct(int $reasonId, ?string $key, ?string $law, ?string $article, ?string $paragraph, ?string $point, ?string $subpoint, ?string $text, ?string $freeFormNote, string $activeFrom, ?string $activeTo, ?string $category)
     {
         $this->reasonId = $reasonId;
         $this->key = $key;
         $this->law = $law;
         $this->article = $article;
         $this->paragraph = $paragraph;
+        $this->point = $point;
+        $this->subpoint = $subpoint;
         $this->text = $text;
         $this->freeFormNote = $freeFormNote;
-        $this->activeFrom = $activeFrom;
-        $this->activeTo = $activeTo;
+        $this->activeFrom = new \DateTimeImmutable($activeFrom);
+        $this->activeTo = null !== $activeTo ? new \DateTimeImmutable($activeTo) : null;
         $this->category = $category;
     }
 
     /**
-     * @return array{reasonId: int, key: ?string, law: ?string, article: int, paragraph: int, text: ?string, freeFormNote: ?string, activeFrom: string, activeTo: ?string, category: ?string}
+     * @return array{reasonId: int, key: ?string, law: ?string, article: ?string, paragraph: ?string, point: ?string, subpoint: ?string,  text: ?string, freeFormNote: ?string, activeFrom: string, activeTo: ?string, category: ?string}
      */
     public function jsonSerialize(): array
     {
@@ -40,6 +44,8 @@ final class ValueAddedTaxExemptionReasonDto implements SEFStorageInterface
             'law' => $this->law,
             'article' => $this->article,
             'paragraph' => $this->paragraph,
+            'point' => $this->point,
+            'subpoint' => $this->subpoint,
             'text' => $this->text,
             'freeFormNote' => $this->freeFormNote,
             'activeFrom' => $this->activeFrom->format('Y-m-d'),

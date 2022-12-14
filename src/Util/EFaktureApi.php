@@ -86,18 +86,17 @@ final class EFaktureApi
 
                 foreach ($matches[0] as $match) {
                     $sefClass = $route->SEFObject();
+                    $decodedResp = json_decode($match, true);
+                    if (null === $decodedResp) {
+                        continue;
+                    }
                     try {
-                        $decodedResp = json_decode($match, true);
-                        if(null === $decodedResp) {
-                            continue;
-                        }
                         /** @var string[] $decodedResp */
                         /** @var SEFStorageInterface $sefObj */
                         $sefObj = new $sefClass(...array_values($decodedResp));
                         $resourceStream->getStorageInterface()->store([$sefObj]);
-                    } catch (\Throwable $e) {
+                    } catch (\Throwable) {
                     }
-
                 }
             });
 

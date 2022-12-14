@@ -94,7 +94,7 @@ final class FileSystemStorage implements StorageInterface
             }
             foreach ($records as $record) {
                 foreach ($data as $key => $value) {
-                    if(isset($record->$key)) {
+                    if (isset($record->$key)) {
                         if ($record->$key == $value) {
                             $response[] = $record;
                         } else {
@@ -118,7 +118,7 @@ final class FileSystemStorage implements StorageInterface
         }
         $size = 0;
         $fileHandle = fopen($filename, 'r');
-        if(false === $fileHandle) {
+        if (false === $fileHandle) {
             return $size;
         }
         while (!feof($fileHandle)) {
@@ -144,7 +144,7 @@ final class FileSystemStorage implements StorageInterface
         $response = [];
         $currentLine = 0;
         $fileHandle = fopen($filename, 'r');
-        if(false === $fileHandle) {
+        if (false === $fileHandle) {
             return $response;
         }
         while (!feof($fileHandle)) {
@@ -154,7 +154,7 @@ final class FileSystemStorage implements StorageInterface
                     $SEFItem = str_replace(PHP_EOL, '', $line);
                     $SEFItem = json_decode($SEFItem, true);
                     /** @var string[]|null $SEFItem */
-                    if(null !== $SEFItem) {
+                    if (null !== $SEFItem) {
                         /** @var SEFStorageInterface $SEFStorage */
                         $SEFStorage = new $model(...array_values($SEFItem));
                         $response[] = $SEFStorage;
