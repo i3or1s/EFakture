@@ -22,7 +22,7 @@ final class UnitMeasures
             return [];
         }
         foreach ($systemUnitMeasures as $unitMeasure) {
-            $unitMeasures[] = new UnitMeasure(
+            $unitMeasures[$unitMeasure['Code']] = new UnitMeasure(
                 $unitMeasure['Code'],
                 $unitMeasure['Symbol'],
                 $unitMeasure['NameEng'],
