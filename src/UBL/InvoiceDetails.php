@@ -19,22 +19,22 @@ final class InvoiceDetails
     public readonly CustomizationID $customizationId;
     public readonly ID $invoiceId;
     public readonly IssueDate $issueDate;
-    public readonly DueDate $dueDate;
+    public readonly ?DueDate $dueDate;
     public readonly InvoiceTypeCode $invoiceTypeCode;
     public readonly DocumentCurrencyCode $documentCurrency;
     public readonly \i3or1s\UBL\CAC\InvoicePeriod $invoicePeriod;
     public readonly ContractDocumentReference $contractNumber;
-    public readonly Delivery $deliveryDate;
+    public readonly ?Delivery $deliveryDate;
 
     public function __construct(
         string $invoiceNumber,
         \DateTimeImmutable $issueDate,
-        \DateTimeImmutable $dueDate,
+        ?\DateTimeImmutable $dueDate,
         InvoiceTypeCode $invoiceTypeCode,
         string $currencyCode,
         InvoicePeriod $invoicePeriod,
         string $contractNumber,
-        \DateTimeImmutable $deliveryDate
+        ?\DateTimeImmutable $deliveryDate
     ) {
         $this->customizationId = new CustomizationID(
             new NormalizedString('urn:cen.eu:en16931:2017#compliant#urn:mfin.gov.rs:srbdt:2021'),
@@ -57,7 +57,7 @@ final class InvoiceDetails
             null
         );
         $this->issueDate = new IssueDate($issueDate->format('Y-m-d'));
-        $this->dueDate = new DueDate($dueDate->format('Y-m-d'));
+        $this->dueDate = $dueDate === null ? null : new DueDate($dueDate->format('Y-m-d'));
         $this->invoiceTypeCode = $invoiceTypeCode;
         $this->documentCurrency = new DocumentCurrencyCode(
             new NormalizedString($currencyCode),
@@ -102,7 +102,7 @@ final class InvoiceDetails
             null
         );
 
-        $this->deliveryDate = new Delivery(
+        $this->deliveryDate = $deliveryDate === null ? null : new Delivery(
             null,
             null,
             null,

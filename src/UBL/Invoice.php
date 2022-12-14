@@ -98,7 +98,7 @@ final class Invoice
             null,
             null,
             null,
-            [$invoiceDetails->deliveryDate],
+            $invoiceDetails->deliveryDate === null ? null : [$invoiceDetails->deliveryDate],
             null,
             [$paymentMeans->paymentMeans],
             null,
