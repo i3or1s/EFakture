@@ -15,6 +15,7 @@ use i3or1s\UBL\CBC\ID;
 use i3or1s\UBL\CBC\InvoicedQuantity;
 use i3or1s\UBL\CBC\LineExtensionAmount;
 use i3or1s\UBL\CBC\Name;
+use i3or1s\UBL\CBC\Note;
 use i3or1s\UBL\CBC\Percent;
 use i3or1s\UBL\CBC\PriceAmount;
 
@@ -22,7 +23,17 @@ final class InvoiceLine
 {
     public readonly \i3or1s\UBL\CAC\InvoiceLine $invoiceLine;
 
-    public function __construct(float $quantity, UnitMeasure $unitMeasure, float $amountPerItem, string $name, int $tax, int $orderNumber, ?AllowanceCharge $allowanceCharge)
+    /**
+     * @param float $quantity
+     * @param UnitMeasure $unitMeasure
+     * @param float $amountPerItem
+     * @param string $name
+     * @param int $tax
+     * @param int $orderNumber
+     * @param AllowanceCharge|null $allowanceCharge
+     * @param Note[]|null $note
+     */
+    public function __construct(float $quantity, UnitMeasure $unitMeasure, float $amountPerItem, string $name, int $tax, int $orderNumber, ?AllowanceCharge $allowanceCharge, ?array $note)
     {
         $this->invoiceLine = new \i3or1s\UBL\CAC\InvoiceLine(
             new ID(
@@ -36,7 +47,7 @@ final class InvoiceLine
                 null
             ),
             null,
-            null,
+            $note,
             new InvoicedQuantity(
                 new XsdDecimal($quantity),
                 new NormalizedString($unitMeasure->code),
