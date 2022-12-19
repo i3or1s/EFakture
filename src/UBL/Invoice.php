@@ -4,7 +4,9 @@ namespace i3or1s\EFakture\UBL;
 
 use i3or1s\UBL\CAC\AccountingCustomerParty;
 use i3or1s\UBL\CAC\AccountingSupplierParty;
+use i3or1s\UBL\CAC\AllowanceCharge;
 use i3or1s\UBL\CAC\LegalMonetaryTotal;
+use i3or1s\UBL\CBC\Note;
 
 final class Invoice
 {
@@ -13,6 +15,8 @@ final class Invoice
     /**
      * @param TaxSubtotal[] $taxSubtotal
      * @param InvoiceLine[] $invoiceItem
+     * @param AllowanceCharge[]|null $allowanceCharge
+     * @param Note[]|null $note
      */
     public function __construct(
         InvoiceDetails $invoiceDetails,
@@ -26,7 +30,10 @@ final class Invoice
         ?float $sumOfAllowanceOnDocument,
         ?float $paidAmount,
         float $amountDueForPayment,
-        array $invoiceItem
+        array $invoiceItem,
+        ?array $allowanceCharge = null,
+        ?array $note = null,
+
     ) {
         /** @var \i3or1s\UBL\CAC\InvoiceLine[] $invoiceLine */
         $invoiceLine = [];
@@ -54,7 +61,7 @@ final class Invoice
             null,
             $invoiceDetails->dueDate,
             $invoiceDetails->invoiceTypeCode->invoiceTypeCode,
-            null,
+            $note,
             null,
             $invoiceDetails->documentCurrency,
             null,
@@ -103,7 +110,7 @@ final class Invoice
             [$paymentMeans->paymentMeans],
             null,
             null,
-            null,
+            $allowanceCharge,
             null,
             null,
             null,
