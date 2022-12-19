@@ -5,6 +5,7 @@ namespace i3or1s\EFakture\UBL;
 use i3or1s\EFakture\Model\UnitMeasure;
 use i3or1s\UBL\Basic\NormalizedString;
 use i3or1s\UBL\Basic\XsdDecimal;
+use i3or1s\UBL\CAC\AllowanceCharge;
 use i3or1s\UBL\CAC\ClassifiedTaxCategory;
 use i3or1s\UBL\CAC\Item;
 use i3or1s\UBL\CAC\Price;
@@ -21,7 +22,7 @@ final class InvoiceLine
 {
     public readonly \i3or1s\UBL\CAC\InvoiceLine $invoiceLine;
 
-    public function __construct(float $quantity, UnitMeasure $unitMeasure, float $amountPerItem, string $name, int $tax, int $orderNumber)
+    public function __construct(float $quantity, UnitMeasure $unitMeasure, float $amountPerItem, string $name, int $tax, int $orderNumber, ?AllowanceCharge $allowanceCharge)
     {
         $this->invoiceLine = new \i3or1s\UBL\CAC\InvoiceLine(
             new ID(
@@ -63,7 +64,7 @@ final class InvoiceLine
             null,
             null,
             null,
-            null,
+            [$allowanceCharge],
             null,
             null,
             new Item(
