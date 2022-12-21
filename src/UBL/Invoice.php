@@ -4,6 +4,7 @@ namespace i3or1s\EFakture\UBL;
 
 use i3or1s\UBL\CAC\AccountingCustomerParty;
 use i3or1s\UBL\CAC\AccountingSupplierParty;
+use i3or1s\UBL\CAC\AdditionalDocumentReference;
 use i3or1s\UBL\CAC\AllowanceCharge;
 use i3or1s\UBL\CAC\LegalMonetaryTotal;
 use i3or1s\UBL\CBC\Note;
@@ -17,6 +18,7 @@ final class Invoice
      * @param InvoiceLine[] $invoiceItem
      * @param AllowanceCharge[]|null $allowanceCharge
      * @param Note[]|null $note
+     * @param AdditionalDocumentReference[]|null $additionalDocumentReference
      */
     public function __construct(
         InvoiceDetails $invoiceDetails,
@@ -33,6 +35,7 @@ final class Invoice
         array $invoiceItem,
         ?array $allowanceCharge = null,
         ?array $note = null,
+        ?array $additionalDocumentReference = null
 
     ) {
         /** @var \i3or1s\UBL\CAC\InvoiceLine[] $invoiceLine */
@@ -80,7 +83,7 @@ final class Invoice
             null,
             null,
             [$invoiceDetails->contractNumber],
-            null,
+            $additionalDocumentReference,
             null,
             null,
             new AccountingSupplierParty(
