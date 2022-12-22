@@ -23,7 +23,7 @@ final class InvoiceDetails
     public readonly InvoiceTypeCode $invoiceTypeCode;
     public readonly DocumentCurrencyCode $documentCurrency;
     public readonly \i3or1s\UBL\CAC\InvoicePeriod $invoicePeriod;
-    public readonly ContractDocumentReference $contractNumber;
+    public readonly ?ContractDocumentReference $contractNumber;
     public readonly ?Delivery $deliveryDate;
 
     public function __construct(
@@ -33,7 +33,7 @@ final class InvoiceDetails
         InvoiceTypeCode $invoiceTypeCode,
         string $currencyCode,
         InvoicePeriod $invoicePeriod,
-        string $contractNumber,
+        ?string $contractNumber,
         ?\DateTimeImmutable $deliveryDate
     ) {
         $this->customizationId = new CustomizationID(
@@ -73,7 +73,7 @@ final class InvoiceDetails
         );
         $this->invoicePeriod = $invoicePeriod->invoicePeriod;
 
-        $this->contractNumber = new ContractDocumentReference(
+        $this->contractNumber = $contractNumber === null ? null : new ContractDocumentReference(
             new ID(
                 new NormalizedString($contractNumber),
                 null,

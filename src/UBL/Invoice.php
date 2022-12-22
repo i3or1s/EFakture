@@ -82,7 +82,7 @@ final class Invoice
             null,
             null,
             null,
-            [$invoiceDetails->contractNumber],
+            $invoiceDetails->contractNumber === null ? null : [$invoiceDetails->contractNumber],
             $additionalDocumentReference,
             null,
             null,
