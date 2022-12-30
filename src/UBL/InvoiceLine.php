@@ -163,7 +163,7 @@ final class InvoiceLine
             ),
             new Price(
                 new PriceAmount(
-                    new XsdDecimal($amountPerItem),
+                    new XsdDecimal(round(($amountPerItem - $allowanceCharge?->Amount->value->value) * $quantity, 2)),
                     new NormalizedString('RSD'),
                     null
                 ),
