@@ -56,7 +56,7 @@ final class InvoiceLine
                 null
             ),
             new LineExtensionAmount(
-                new XsdDecimal(round($amountPerItem * $quantity, 2)),
+                new XsdDecimal(round(($amountPerItem - $allowanceCharge?->Amount->value->value) * $quantity, 2)),
                 new NormalizedString('RSD'),
                 null
             ),
@@ -163,7 +163,7 @@ final class InvoiceLine
             ),
             new Price(
                 new PriceAmount(
-                    new XsdDecimal(round(($amountPerItem - $allowanceCharge?->Amount->value->value) * $quantity, 2)),
+                    new XsdDecimal($amountPerItem),
                     new NormalizedString('RSD'),
                     null
                 ),
