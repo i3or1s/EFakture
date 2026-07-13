@@ -13,6 +13,8 @@ enum EFakturaAPIRoutes: string
     case GET_ALL_COMPANIES = '/api/publicApi/getAllCompanies';
     case SALES_INVOICE_UBL = '/api/publicApi/sales-invoice/ubl';
     case SALES_INVOICE_UBL_UPLOAD = '/api/publicApi/sales-invoice/ubl/upload';
+    case SALES_INVOICE_IDS = '/api/publicApi/sales-invoice/ids';
+    case SALES_INVOICE = '/api/publicApi/sales-invoice';
     case VALUE_ADDED_TAX_EXEMPTION_LIST = '/api/publicApi/sales-invoice/getValueAddedTaxExemptionReasonList';
 
     public function SEFObject(): string

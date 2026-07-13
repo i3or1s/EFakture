@@ -4,9 +4,13 @@ namespace i3or1s\EFakture\Model;
 
 final class SalesInvoicesDto
 {
-    public readonly ?int $salesInvoiceIds;
+    /** @var int[] */
+    public readonly array $salesInvoiceIds;
 
-    public function __construct(?int $salesInvoiceIds)
+    /**
+     * @param int[] $salesInvoiceIds
+     */
+    public function __construct(array $salesInvoiceIds)
     {
         $this->salesInvoiceIds = $salesInvoiceIds;
     }

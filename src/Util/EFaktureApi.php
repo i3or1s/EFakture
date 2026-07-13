@@ -33,15 +33,25 @@ final class EFaktureApi
     }
 
     /**
+     * @param array<string, string|int> $queryParams
+     *
      * @return array<string, string|int|bool>
      *
      * @throws ResourceUnavailable
      */
-    public function getResource(EFakturaAPIRoutes $route): array
+    public function getResource(EFakturaAPIRoutes $route, array $queryParams = []): array
     {
         try {
+            $query = [];
+            foreach ($queryParams as $name => $value) {
+                $query[] = sprintf('%s=%s', $name, $value);
+            }
+            $uri = sprintf('%s/%s', trim($this->rootUri, '/'), trim($route->value, '/'));
+            if ([] !== $query) {
+                $uri .= sprintf('?%s', implode('&', $query));
+            }
             $promise = $this->browser->get(
-                sprintf('%s/%s', trim($this->rootUri, '/'), trim($route->value, '/')),
+                $uri,
                 [
                     'accept' => '*/*',
                     'ApiKey' => $this->apiKey,
