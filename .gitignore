@@ -2,6 +2,6 @@ vendor
 doc
 .idea
 cache
-tests
 bin
 .php-cs-fixer.cache
+tests/.env.local

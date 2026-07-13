@@ -70,6 +70,43 @@ final class EFaktureApi
         return [];
     }
 
+    /**
+     * Fetches a resource without JSON-decoding the response body, for endpoints
+     * that return raw content (e.g. the original UBL XML document).
+     *
+     * @param array<string, string|int> $queryParams
+     *
+     * @throws ResourceUnavailable
+     */
+    public function getRawResource(EFakturaAPIRoutes $route, array $queryParams = []): string
+    {
+        try {
+            $query = [];
+            foreach ($queryParams as $name => $value) {
+                $query[] = sprintf('%s=%s', $name, $value);
+            }
+            $uri = sprintf('%s/%s', trim($this->rootUri, '/'), trim($route->value, '/'));
+            if ([] !== $query) {
+                $uri .= sprintf('?%s', implode('&', $query));
+            }
+            $promise = $this->browser->get(
+                $uri,
+                [
+                    'accept' => '*/*',
+                    'ApiKey' => $this->apiKey,
+                ]
+            );
+            /** @var Response $response */
+            $response = await($promise);
+
+            return $response->getBody()->getContents();
+        } catch (ResponseException $e) {
+            throw new ResourceUnavailable($e->getResponse()->getBody()->getContents(), $e->getCode(), $e);
+        } catch (\Throwable $e) {
+            throw new ResourceUnavailable($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
     public function streamResource(EFakturaAPIRoutes $route, ResourceStreamInterface $resourceStream): ResourceStreamInterface
     {
         if ($resourceStream->getStorageInterface()->isLockedForWriting()) {
