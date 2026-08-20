@@ -24,7 +24,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^8.1",
-        "i3or1s/ubl": "dev-main",
+        "i3or1s/ubl": "0.0.3",
         "react/http": "^1.8",
         "react/async": "^4",
         "react/promise-timer": "^1.9",
