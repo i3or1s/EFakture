@@ -22,7 +22,8 @@ final class InvoiceDetails
     public readonly ?DueDate $dueDate;
     public readonly InvoiceTypeCode $invoiceTypeCode;
     public readonly DocumentCurrencyCode $documentCurrency;
-    public readonly \i3or1s\UBL\CAC\InvoicePeriod $invoicePeriod;
+    /** Null for a credit note: SEF allows no VAT point date type (DescriptionCode) on one. */
+    public readonly ?\i3or1s\UBL\CAC\InvoicePeriod $invoicePeriod;
     public readonly ?ContractDocumentReference $contractNumber;
     public readonly ?Delivery $deliveryDate;
 
@@ -32,7 +33,7 @@ final class InvoiceDetails
         ?\DateTimeImmutable $dueDate,
         InvoiceTypeCode $invoiceTypeCode,
         string $currencyCode,
-        InvoicePeriod $invoicePeriod,
+        ?InvoicePeriod $invoicePeriod,
         ?string $contractNumber,
         ?\DateTimeImmutable $deliveryDate
     ) {
@@ -71,7 +72,7 @@ final class InvoiceDetails
             null,
             null
         );
-        $this->invoicePeriod = $invoicePeriod->invoicePeriod;
+        $this->invoicePeriod = $invoicePeriod?->invoicePeriod;
 
         $this->contractNumber = $contractNumber === null ? null : new ContractDocumentReference(
             new ID(

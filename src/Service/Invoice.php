@@ -3,17 +3,23 @@
 namespace i3or1s\EFakture\Service;
 
 use i3or1s\EFakture\Exception\ResourceUnavailable;
+use i3or1s\EFakture\Model\CancelInvoiceMessageDto;
+use i3or1s\EFakture\Model\CirAssignmentChange;
 use i3or1s\EFakture\Model\CirInvoiceStatus;
 use i3or1s\EFakture\Model\DocumentDirection;
 use i3or1s\EFakture\Model\MiniInvoiceDto;
 use i3or1s\EFakture\Model\PurchaseInvoicesDto;
 use i3or1s\EFakture\Model\PurchaseInvoiceStatus;
 use i3or1s\EFakture\Model\SalesInvoicesDto;
+use i3or1s\EFakture\Model\SalesInvoiceStatusChangeDto;
 use i3or1s\EFakture\Model\SalesInvoiceStatus;
 use i3or1s\EFakture\Model\SendToCir;
 use i3or1s\EFakture\Model\SimplePurchaseInvoiceDto;
 use i3or1s\EFakture\Model\SimpleSalesInvoiceDto;
+use i3or1s\EFakture\Model\StornoInvoiceMessageDto;
+use i3or1s\EFakture\UBL\CBC\InvoiceTypeCode;
 use i3or1s\EFakture\UBL\Invoice as UBLInvoice;
+use i3or1s\EFakture\Util\CreditNoteXml;
 use i3or1s\EFakture\Util\EFakturaAPIRoutes;
 use i3or1s\EFakture\Util\EFaktureApi;
 use i3or1s\EFakture\Util\XmlToArrayConverter;
@@ -39,24 +45,124 @@ final class Invoice
      */
     private const RETRY_BASE_DELAY_SECONDS = 1.0;
 
-    public function send(EFaktureApi $api, UBLInvoice $invoice): MiniInvoiceDto
+    /**
+     * Sends a UBL invoice. $requestId makes the call idempotent on SEF: a repeat with the same
+     * id returns the invoice already created instead of a duplicate, so keep it stable for a
+     * given document (a UUID stored with it), not per attempt. It defaults to the invoice
+     * number for backward compatibility.
+     *
+     * @throws ResourceUnavailable
+     */
+    public function send(EFaktureApi $api, UBLInvoice $invoice, string $sendToCir = SendToCir::AUTO, ?string $requestId = null): MiniInvoiceDto
     {
-        $xmlInvoice = sprintf(
-            '%s%s%s',
-            '<?xml version="1.0" encoding="utf-8"?>',
-            PHP_EOL,
-            $invoice->invoice
-        );
+        return $this->sendXml($api, self::xml($invoice), $sendToCir, $requestId ?? (string) $invoice->invoice->ID->value->value);
+    }
+
+    /**
+     * Sends an already-rendered UBL document, e.g. the exact XML a caller stored or showed
+     * to the user before sending.
+     *
+     * @throws ResourceUnavailable
+     */
+    public function sendXml(EFaktureApi $api, string $xml, string $sendToCir, string $requestId): MiniInvoiceDto
+    {
+        if (!SendToCir::isValid($sendToCir)) {
+            throw new \InvalidArgumentException(sprintf('Invalid sendToCir "%s".', $sendToCir));
+        }
         /** @var array{InvoiceId: int|string, PurchaseInvoiceId: int|string, SalesInvoiceId: int|string} $response */
-        $response = $api->sendResource(EFakturaAPIRoutes::SALES_INVOICE_UBL, $xmlInvoice, [
-            'sendToCir' => SendToCir::AUTO,
-            'requestId' => $invoice->invoice->ID->value->value,
+        $response = $api->sendResource(EFakturaAPIRoutes::SALES_INVOICE_UBL, $xml, [
+            'sendToCir' => $sendToCir,
+            'requestId' => $requestId,
         ], [
             'accept' => 'text/plain',
             'Content-Type' => 'application/xml',
         ]);
 
         return new MiniInvoiceDto((int) $response['InvoiceId'], (int) $response['PurchaseInvoiceId'], (int) $response['SalesInvoiceId']);
+    }
+
+    /** The XML document SEF receives for $invoice. */
+    /**
+     * The document SEF receives: an UBL Invoice, or an UBL CreditNote for type 381
+     * (SEF refuses an Invoice root with type 381).
+     */
+    public static function xml(UBLInvoice $invoice): string
+    {
+        $xml = sprintf('%s%s%s', '<?xml version="1.0" encoding="utf-8"?>', PHP_EOL, $invoice->invoice);
+        if ((string) InvoiceTypeCode::CREDIT_NOTE === CreditNoteXml::typeCode($xml)) {
+            return CreditNoteXml::fromInvoiceXml($xml);
+        }
+
+        return $xml;
+    }
+
+    /**
+     * Cancels a sales invoice the buyer has not acted on yet.
+     *
+     * @return array<string, mixed> SEF's response (the updated sales invoice)
+     *
+     * @throws ResourceUnavailable
+     */
+    public function cancel(EFaktureApi $api, int $salesInvoiceId, string $comment): array
+    {
+        $message = new CancelInvoiceMessageDto($salesInvoiceId, $comment);
+
+        return $api->sendJson(EFakturaAPIRoutes::SALES_INVOICE_CANCEL, [
+            'invoiceId' => $message->invoiceId,
+            'cancelComments' => $message->cancelComments,
+        ]);
+    }
+
+    /**
+     * Reverses (storno) a sales invoice, typically after the buyer approved it.
+     *
+     * @return array<string, mixed> SEF's response (the updated sales invoice)
+     *
+     * @throws ResourceUnavailable
+     */
+    public function storno(EFaktureApi $api, int $salesInvoiceId, string $stornoNumber, string $comment): array
+    {
+        $message = new StornoInvoiceMessageDto($salesInvoiceId, $stornoNumber, $comment);
+
+        return $api->sendJson(EFakturaAPIRoutes::SALES_INVOICE_STORNO, [
+            'invoiceId' => $message->invoiceId,
+            'stornoNumber' => $message->stornoNumber,
+            'stornoComment' => $message->stornoComment,
+        ]);
+    }
+
+    /**
+     * Status changes of this company's sales invoices on one day, oldest first.
+     *
+     * @return SalesInvoiceStatusChangeDto[]
+     *
+     * @throws ResourceUnavailable
+     */
+    public function changes(EFaktureApi $api, \DateTimeImmutable $date): array
+    {
+        $response = $api->sendResource(EFakturaAPIRoutes::SALES_INVOICE_CHANGES, '', ['date' => $date->format('Y-m-d')], [
+            'accept' => 'application/json',
+        ]);
+
+        $changes = [];
+        foreach ($response as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $changes[] = new SalesInvoiceStatusChangeDto(
+                (int) ($row['EventId'] ?? 0),
+                $row['Date'] ?? null,
+                SalesInvoiceStatus::tryFrom((string) ($row['NewInvoiceStatus'] ?? '')) ?? SalesInvoiceStatus::UNKNOWN,
+                (int) ($row['SalesInvoiceId'] ?? 0),
+                $row['Comment'] ?? null,
+                isset($row['CirInvoiceId']) ? (string) $row['CirInvoiceId'] : null,
+                $row['SubscriptionKey'] ?? null,
+                $row['StornoNumber'] ?? null,
+                CirAssignmentChange::tryFrom((string) ($row['CirAssignmentChange'] ?? '')),
+            );
+        }
+
+        return $changes;
     }
 
     /**

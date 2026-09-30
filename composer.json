@@ -28,7 +28,7 @@
         "react/http": "^1.8",
         "react/async": "^4",
         "react/promise-timer": "^1.9",
-        "ramsey/uuid": "4.x-dev"
+        "ramsey/uuid": "^4.7"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "dev-master",

@@ -16,32 +16,35 @@ final class TaxSubtotal
 {
     public readonly \i3or1s\UBL\CAC\TaxSubtotal $taxSubtotal;
 
-    public function __construct(float $taxableAmount, int $tax, ?float $taxAmount = null, ?string $taxExemptionReasonCode = null)
-    {
-        if (0 === $tax && null === $taxExemptionReasonCode) {
-            throw new \Exception('When tax is 0 then exemption reason must be provided');
+    /**
+     * One row of the VAT breakdown: the taxable base and VAT of one (category, rate) pair.
+     *
+     * @param string|null $category VAT category (see TaxCategoryCode). When null it is derived
+     *                              from the rate as before: S above 0 %, O at 0 %.
+     * @param string|null $taxExemptionReasonCode required for every category other than S
+     */
+    public function __construct(
+        float $taxableAmount,
+        int|float $tax,
+        ?float $taxAmount = null,
+        ?string $taxExemptionReasonCode = null,
+        ?string $category = null,
+        string $currencyCode = 'RSD',
+    ) {
+        $category ??= 0.0 === (float) $tax ? TaxCategoryCode::OUT_OF_SCOPE : TaxCategoryCode::STANDARD;
+        $needsReason = TaxCategoryCode::requiresExemptionReason($category);
+        if ($needsReason && (null === $taxExemptionReasonCode || '' === $taxExemptionReasonCode)) {
+            throw new \Exception(sprintf('VAT category %s needs an exemption reason code', $category));
         }
         $this->taxSubtotal = new \i3or1s\UBL\CAC\TaxSubtotal(
             new TaxCategory(
-                new ID(
-                    new NormalizedString(0 === $tax ? 'O' : 'S'),
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-                ),
+                new ID(new NormalizedString($category), null, null, null, null, null, null, null),
                 null,
-                new Percent(
-                    new XsdDecimal($tax),
-                    null
-                ),
+                new Percent(new XsdDecimal($tax), null),
                 null,
                 null,
-                0 === $tax ? new TaxExemptionReasonCode(
-                    new NormalizedString($taxExemptionReasonCode),
+                $needsReason ? new TaxExemptionReasonCode(
+                    new NormalizedString((string) $taxExemptionReasonCode),
                     null,
                     null,
                     null,
@@ -56,16 +59,7 @@ final class TaxSubtotal
                 null,
                 null,
                 new TaxScheme(
-                    new ID(
-                        new \i3or1s\UBL\Basic\NormalizedString('VAT'),
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                    ),
+                    new ID(new NormalizedString('VAT'), null, null, null, null, null, null, null),
                     null,
                     null,
                     null,
@@ -74,12 +68,12 @@ final class TaxSubtotal
             ),
             new TaxAmount(
                 new XsdDecimal($taxAmount ?? round($taxableAmount * ($tax / 100), 2)),
-                new NormalizedString('RSD'),
+                new NormalizedString($currencyCode),
                 null
             ),
             new TaxableAmount(
                 new XsdDecimal($taxableAmount),
-                new NormalizedString('RSD'),
+                new NormalizedString($currencyCode),
                 null
             ),
             null,

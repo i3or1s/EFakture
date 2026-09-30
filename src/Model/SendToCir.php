@@ -7,7 +7,7 @@ final class SendToCir
     const DEFAULT = 'Default';
     const AUTO = 'Auto';
     const YES = 'Yes';
-    const NO = 'NO';
+    const NO = 'No';
 
     public readonly string $sendToCir;
 

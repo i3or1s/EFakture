@@ -18,7 +18,8 @@ final class Invoice
      * @param InvoiceLine[] $invoiceItem
      * @param AllowanceCharge[]|null $allowanceCharge
      * @param Note[]|null $note
-     * @param AdditionalDocumentReference[]|null $additionalDocumentReference
+     * @param AdditionalDocumentReference[]|null $additionalDocumentReference see Attachment
+     * @param BillingReference[]|null $billingReference the invoices a credit or debit note corrects
      */
     public function __construct(
         InvoiceDetails $invoiceDetails,
@@ -35,8 +36,9 @@ final class Invoice
         array $invoiceItem,
         ?array $allowanceCharge = null,
         ?array $note = null,
-        ?array $additionalDocumentReference = null
-
+        ?array $additionalDocumentReference = null,
+        string $currencyCode = 'RSD',
+        ?array $billingReference = null,
     ) {
         /** @var \i3or1s\UBL\CAC\InvoiceLine[] $invoiceLine */
         $invoiceLine = [];
@@ -75,9 +77,9 @@ final class Invoice
             null,
             null,
             null,
-            [$invoiceDetails->invoicePeriod],
+            null === $invoiceDetails->invoicePeriod ? null : [$invoiceDetails->invoicePeriod],
             null,
-            null,
+            null === $billingReference ? null : array_map(static fn (BillingReference $reference) => $reference->billingReference, $billingReference),
             null,
             null,
             null,
@@ -121,7 +123,7 @@ final class Invoice
             [new \i3or1s\UBL\CAC\TaxTotal(
                 new \i3or1s\UBL\CBC\TaxAmount(
                     new \i3or1s\UBL\Basic\XsdDecimal(round($taxTotalAmount, 2)),
-                    new \i3or1s\UBL\Basic\NormalizedString('RSD'),
+                    new \i3or1s\UBL\Basic\NormalizedString($currencyCode),
                     null
                 ),
                 null,
@@ -133,34 +135,34 @@ final class Invoice
             new LegalMonetaryTotal(
                 new \i3or1s\UBL\CBC\LineExtensionAmount(
                     new \i3or1s\UBL\Basic\XsdDecimal(round($sumOfInvoiceLineNetAmount, 2)),
-                    new \i3or1s\UBL\Basic\NormalizedString('RSD'),
+                    new \i3or1s\UBL\Basic\NormalizedString($currencyCode),
                     null
                 ),
                 new \i3or1s\UBL\CBC\TaxExclusiveAmount(
                     new \i3or1s\UBL\Basic\XsdDecimal(round($invoiceTotalAmountWithoutVAT, 2)),
-                    new \i3or1s\UBL\Basic\NormalizedString('RSD'),
+                    new \i3or1s\UBL\Basic\NormalizedString($currencyCode),
                     null
                 ),
                 new \i3or1s\UBL\CBC\TaxInclusiveAmount(
                     new \i3or1s\UBL\Basic\XsdDecimal(round($invoiceTotalAmountWithVAT, 2)),
-                    new \i3or1s\UBL\Basic\NormalizedString('RSD'),
+                    new \i3or1s\UBL\Basic\NormalizedString($currencyCode),
                     null
                 ),
                 null !== $sumOfAllowanceOnDocument ? new \i3or1s\UBL\CBC\AllowanceTotalAmount(
                     new \i3or1s\UBL\Basic\XsdDecimal(round($sumOfAllowanceOnDocument, 2)),
-                    new \i3or1s\UBL\Basic\NormalizedString('RSD'),
+                    new \i3or1s\UBL\Basic\NormalizedString($currencyCode),
                     null
                 ) : null,
                 null,
                 null !== $paidAmount ? new \i3or1s\UBL\CBC\PrepaidAmount(
                     new \i3or1s\UBL\Basic\XsdDecimal(round($paidAmount, 2)),
-                    new \i3or1s\UBL\Basic\NormalizedString('RSD'),
+                    new \i3or1s\UBL\Basic\NormalizedString($currencyCode),
                     null
                 ) : null,
                 null,
                 new \i3or1s\UBL\CBC\PayableAmount(
                     new \i3or1s\UBL\Basic\XsdDecimal(round($amountDueForPayment, 2)),
-                    new \i3or1s\UBL\Basic\NormalizedString('RSD'),
+                    new \i3or1s\UBL\Basic\NormalizedString($currencyCode),
                     null
                 ),
                 null

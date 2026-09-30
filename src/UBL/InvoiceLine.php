@@ -3,6 +3,7 @@
 namespace i3or1s\EFakture\UBL;
 
 use i3or1s\EFakture\Model\UnitMeasure;
+use i3or1s\EFakture\Util\Xml;
 use i3or1s\UBL\Basic\NormalizedString;
 use i3or1s\UBL\Basic\XsdDecimal;
 use i3or1s\UBL\CAC\AllowanceCharge;
@@ -30,11 +31,25 @@ final class InvoiceLine
      * @param string $name
      * @param int $tax
      * @param int $orderNumber
-     * @param AllowanceCharge|null $allowanceCharge
+     * @param AllowanceCharge|null $allowanceCharge the line's discount (see Allowance): its amount is the
+     *                                     total for the line, not per unit
      * @param Note[]|null $note
+     * @param string|null $taxCategory VAT category (see TaxCategoryCode); derived from the rate when null
+     * @param string|null $sellersItemId the seller's item code; the line number when null
      */
-    public function __construct(float $quantity, UnitMeasure $unitMeasure, float $amountPerItem, string $name, int $tax, int $orderNumber, ?AllowanceCharge $allowanceCharge, ?array $note)
-    {
+    public function __construct(
+        float $quantity,
+        UnitMeasure $unitMeasure,
+        float $amountPerItem,
+        string $name,
+        int|float $tax,
+        int $orderNumber,
+        ?AllowanceCharge $allowanceCharge,
+        ?array $note,
+        ?string $taxCategory = null,
+        string $currencyCode = 'RSD',
+        ?string $sellersItemId = null,
+    ) {
         $this->invoiceLine = new \i3or1s\UBL\CAC\InvoiceLine(
             new ID(
                 new NormalizedString((string) $orderNumber),
@@ -56,8 +71,8 @@ final class InvoiceLine
                 null
             ),
             new LineExtensionAmount(
-                new XsdDecimal(round(($amountPerItem - $allowanceCharge?->Amount->value->value) * $quantity, 2)),
-                new NormalizedString('RSD'),
+                new XsdDecimal(round($amountPerItem * $quantity - ($allowanceCharge?->Amount->value->value ?? 0), 2)),
+                new NormalizedString($currencyCode),
                 null
             ),
             null,
@@ -75,7 +90,7 @@ final class InvoiceLine
             null,
             null,
             null,
-            [$allowanceCharge],
+            null === $allowanceCharge ? null : [$allowanceCharge],
             null,
             null,
             new Item(
@@ -83,7 +98,7 @@ final class InvoiceLine
                 null,
                 null,
                 null,
-                new Name($name, null, null),
+                new Name(Xml::text($name), null, null),
                 null,
                 null,
                 null,
@@ -92,7 +107,7 @@ final class InvoiceLine
                 null,
                 new SellersItemIdentification(
                     new ID(
-                        new NormalizedString((string) $orderNumber),
+                        new NormalizedString($sellersItemId ?? (string) $orderNumber),
                         null,
                         null,
                         null,
@@ -119,7 +134,7 @@ final class InvoiceLine
                 null,
                 [new ClassifiedTaxCategory(
                     new ID(
-                        new NormalizedString($tax > 0 ? 'S' : 'O'),
+                        new NormalizedString($taxCategory ?? ($tax > 0 ? TaxCategoryCode::STANDARD : TaxCategoryCode::OUT_OF_SCOPE)),
                         null,
                         null,
                         null,
@@ -164,7 +179,7 @@ final class InvoiceLine
             new Price(
                 new PriceAmount(
                     new XsdDecimal($amountPerItem),
-                    new NormalizedString('RSD'),
+                    new NormalizedString($currencyCode),
                     null
                 ),
                 null,
