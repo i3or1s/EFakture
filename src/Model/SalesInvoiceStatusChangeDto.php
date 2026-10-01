@@ -12,9 +12,9 @@ final class SalesInvoiceStatusChangeDto
     public readonly ?string $cirInvoiceId;
     public readonly ?string $subscriptionKey;
     public readonly ?string $stornoNumber;
-    public readonly CirAssignmentChange $cirAssignmentChange;
+    public readonly ?CirAssignmentChange $cirAssignmentChange;
 
-    public function __construct(int $eventId, ?string $date, SalesInvoiceStatus $newInvoiceStatus, int $salesInvoiceId, ?string $comment, ?string $cirInvoiceId, ?string $subscriptionKey, ?string $stornoNumber, CirAssignmentChange $cirAssignmentChange)
+    public function __construct(int $eventId, ?string $date, SalesInvoiceStatus $newInvoiceStatus, int $salesInvoiceId, ?string $comment, ?string $cirInvoiceId, ?string $subscriptionKey, ?string $stornoNumber, ?CirAssignmentChange $cirAssignmentChange)
     {
         $this->eventId = $eventId;
         $this->date = $date;

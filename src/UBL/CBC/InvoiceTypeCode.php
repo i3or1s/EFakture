@@ -7,8 +7,12 @@ use i3or1s\UBL\Basic\NormalizedString;
 final class InvoiceTypeCode
 {
     const COMMERCIAL_INVOICE = 380;
-    const BOOK_APPROVAL = 381;
-    const BOOK_DEBT = 383;
+    const CREDIT_NOTE = 381;
+    const DEBIT_NOTE = 383;
+    /** @deprecated use CREDIT_NOTE: 381 is a credit note (knjižno odobrenje) */
+    const BOOK_APPROVAL = self::CREDIT_NOTE;
+    /** @deprecated use DEBIT_NOTE: 383 is a debit note (knjižno zaduženje) */
+    const BOOK_DEBT = self::DEBIT_NOTE;
     const CORRECTED_INVOICE = 384;
     const ADVANCE_INVOICE = 386;
 
@@ -18,7 +22,7 @@ final class InvoiceTypeCode
     {
         if (!in_array(
             $invoiceTypeCode,
-            [self::COMMERCIAL_INVOICE, self::BOOK_APPROVAL, self::BOOK_DEBT, self::CORRECTED_INVOICE, self::ADVANCE_INVOICE]
+            [self::COMMERCIAL_INVOICE, self::CREDIT_NOTE, self::DEBIT_NOTE, self::CORRECTED_INVOICE, self::ADVANCE_INVOICE]
         )) {
             throw new \Exception('Invalid code type');
         }

@@ -2,6 +2,7 @@
 
 namespace i3or1s\EFakture\UBL;
 
+use i3or1s\EFakture\Util\Xml;
 use i3or1s\UBL\Basic\NormalizedString;
 use i3or1s\UBL\CBC\ID;
 
@@ -47,7 +48,7 @@ final class Party
                 null
             ))] : null,
             [new \i3or1s\UBL\CAC\PartyName(
-                new \i3or1s\UBL\CBC\Name($name, null, null)
+                new \i3or1s\UBL\CBC\Name(Xml::text($name), null, null)
             )],
             null,
             new \i3or1s\UBL\CAC\PostalAddress(
@@ -57,7 +58,7 @@ final class Party
                 null,
                 null,
                 null,
-                null !== $address ? new \i3or1s\UBL\CBC\StreetName($address, null, null) : null,
+                null !== $address ? new \i3or1s\UBL\CBC\StreetName(Xml::text($address), null, null) : null,
                 null,
                 null,
                 null,
@@ -68,7 +69,7 @@ final class Party
                 null,
                 null,
                 null,
-                new \i3or1s\UBL\CBC\CityName($city, null, null),
+                new \i3or1s\UBL\CBC\CityName(Xml::text($city), null, null),
                 null,
                 null,
                 null,
@@ -128,7 +129,7 @@ final class Party
                 )
             )],
             [new \i3or1s\UBL\CAC\PartyLegalEntity(
-                new \i3or1s\UBL\CBC\RegistrationName($name, null, null),
+                new \i3or1s\UBL\CBC\RegistrationName(Xml::text($name), null, null),
                 new \i3or1s\UBL\CBC\CompanyID(
                     new \i3or1s\UBL\Basic\NormalizedString($identificationNumber),
                     null,
@@ -157,7 +158,7 @@ final class Party
                 null,
                 null,
                 null,
-                new \i3or1s\UBL\CBC\ElectronicMail($emailAddress, null, null),
+                new \i3or1s\UBL\CBC\ElectronicMail(Xml::text($emailAddress), null, null),
                 null,
                 null
             ) : null,

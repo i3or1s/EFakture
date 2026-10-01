@@ -20,6 +20,10 @@ enum EFakturaAPIRoutes: string
     case PURCHASE_INVOICE = '/api/publicApi/purchase-invoice';
     case PURCHASE_INVOICE_XML = '/api/publicApi/purchase-invoice/xml';
     case VALUE_ADDED_TAX_EXEMPTION_LIST = '/api/publicApi/sales-invoice/getValueAddedTaxExemptionReasonList';
+    case SALES_INVOICE_CANCEL = '/api/publicApi/sales-invoice/cancel';
+    case SALES_INVOICE_STORNO = '/api/publicApi/sales-invoice/storno';
+    case SALES_INVOICE_CHANGES = '/api/publicApi/sales-invoice/changes';
+    case COMPANY_REGISTERED = '/api/publicApi/Company/CheckIfCompanyRegisteredOnEfaktura';
 
     public function SEFObject(): string
     {
